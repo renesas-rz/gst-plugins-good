@@ -38,6 +38,7 @@
 #include "gstv4l2object.h"
 #include "gstv4l2tuner.h"
 #include "gstv4l2colorbalance.h"
+#include "gstv4l2src.h"
 
 #include <glib/gi18n-lib.h>
 
@@ -5269,6 +5270,17 @@ gst_v4l2_object_decide_allocation (GstV4l2Object * obj, GstQuery * query)
     GST_DEBUG_OBJECT (obj->dbg_obj, "activate Video Meta");
     gst_buffer_pool_config_add_option (config,
         GST_BUFFER_POOL_OPTION_VIDEO_META);
+  }
+
+  GST_INFO_OBJECT (obj->element, "Number of buffer allocated %d", own_min);
+  if ((GST_IS_V4L2SRC (obj->element) == TRUE) &&
+      (GST_V4L2SRC (obj->element)->num_alloc_buffer != 0xffffffff)) {
+    if ((obj->mode == GST_V4L2_IO_MMAP) || (obj->mode == GST_V4L2_IO_DMABUF)) {
+      own_min = MAX (own_min, GST_V4L2SRC (obj->element)->num_alloc_buffer);
+
+      GST_INFO_OBJECT (obj->element,
+          "Number of buffer allocated changed to %d", own_min);
+    }
   }
 
   gst_buffer_pool_config_set_allocator (config, allocator, &params);
