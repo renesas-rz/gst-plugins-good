@@ -478,6 +478,10 @@ if get_option('default_library') == 'shared'
   plugins_pkgconfig_install_dir = disabler()
 endif
 
+if get_option('ignore-fps-of-video-standard')
+  cdata.set('IGNORE_FPS_STANDARD', 1)
+endif
+
 subdir('gst')
 subdir('sys')
 subdir('ext')
